@@ -9,3 +9,5 @@ STD_BONUS_MULTIPLIER = 100  # Standard multiplier for bonus
 ACE_BONUS_MULTIPLIER = 1000  # Special multiplier for aces bonus
 
 NB_OF_PLAYERS = 2
+
+SCORE_TO_WIN = 2000
