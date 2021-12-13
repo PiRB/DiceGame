@@ -17,3 +17,4 @@ class Player(object):
     self._score = new_score
   
   name = property(_get_name, _set_name)
+  oui
