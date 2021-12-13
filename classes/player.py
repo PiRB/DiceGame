@@ -1,7 +1,9 @@
+# from ..utils.constant import NB_OF_PLAYERS
+
 class Player(object):
 
-  def __init__(self):
-    self._name = 'Player'
+  def __init__(self, name):
+    self._name = name
     self._score = 0
 
   def _get_name(self):
@@ -16,4 +18,16 @@ class Player(object):
   def _set_score(self, new_score):
     self._score = new_score
   
-  name = property(_get_name, _set_name)
+  name = property(_get_name, _set_name, _get_score, _set_score)
+
+def initialize_players():
+  players_list = []
+  for i in range(2): # replace 2 by NB_OF_PLAYERS
+    print('Vous êtes le joueur numéro ', i+1,', veuillez entrer votre nom : ')
+    player_name = input()
+    player = Player(player_name)
+    players_list.append(player)
+  for player in players_list:
+    print('name : ', player._name, ', score : ', player._score)
+
+initialize_players()
