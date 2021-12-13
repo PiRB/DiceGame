@@ -1,4 +1,3 @@
+from classes.game import Game
 
-
-""" def main():
-    print(analyse_score(roll_dice_set(5))) """
+Game.start_game([{'name': 'Haris'}])

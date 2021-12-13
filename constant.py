@@ -1,5 +1,3 @@
-import random
-
 NB_DICE_SIDE = 6  # Nb of side of the Dices
 SCORING_DICE_VALUE_LIST = [1, 5]  # List of the side values of the dice who trigger a standard score
 SCORING_MULTIPLIER_LIST = [100, 50]  # List of multiplier for standard score
