@@ -11,15 +11,15 @@ ACE_BONUS_MULTIPLIER = 1000  # Special multiplier for aces bonus
 NB_DICE_TO_ROLL = 5
 
 NB_OF_PLAYERS = 2
-SCORE_TO_WIN = 2000
+SCORE_TO_WIN = 500
 
 
 # return a list of dices value occurrence for a roll of nb_dice_to_roll dices
 def roll_dice_set(nb_dice_to_roll):
     dice_value_occurrence_list = [0] * NB_DICE_SIDE
     for n in range(nb_dice_to_roll):
-        dice_value = random.randint(1, NB_DICE_SIDE)
-        dice_value_occurrence_list[dice_value - 1] += 1
+      dice_value = random.randint(1, NB_DICE_SIDE)
+      dice_value_occurrence_list[dice_value - 1] += 1
 
     return dice_value_occurrence_list
 
@@ -49,10 +49,10 @@ def analyse_standard_score(dice_value_occurrence_list):
 
 
 def analyse_score(dice_value_occurrence_list):
-    bonus_score, dice_value_occurrence_list = analyse_bonus_score(dice_value_occurrence_list)
-    standard_score, dice_value_occurrence_list = analyse_standard_score(dice_value_occurrence_list)
+  bonus_score, dice_value_occurrence_list = analyse_bonus_score(dice_value_occurrence_list)
+  standard_score, dice_value_occurrence_list = analyse_standard_score(dice_value_occurrence_list)
 
-    return bonus_score + standard_score, dice_value_occurrence_list
+  return bonus_score + standard_score, dice_value_occurrence_list
 
 def initialize_players():
   players_list = []
@@ -60,30 +60,88 @@ def initialize_players():
     print('Entrez votre nom joueur ', i+1)
     player_name = input()
     start_score = 0
-    players_list.append([player_name, start_score])
+    player = {'name': player_name, 'score': start_score}
+    players_list.append(player)
 
   return players_list
 
-def hasWon(player_attributes):
-  return True if player_attributes[1] >= SCORE_TO_WIN else False
+def get_score(player):
+  return player.get('score')
 
-def play_turn(player_attributes):
+def hasWon(player):
+  if player['score'] >= SCORE_TO_WIN:
+    print("La partie est finie, ", player['name'], " a atteint ou dépassé les ", SCORE_TO_WIN, " points")
+    return True
+  else:
+    return False
+
+def play_turn(player):
+  isRerolling = True
   player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
-  print(player_roll)
-  player_attributes[1] +=  player_roll[0]
-  if sum(player_roll[1]) >= 0:
-    print('Voulez-vous relancer les ', sum(player_roll[1]), ' dé(s) restant(s)')
-    replay_response = input()
+  player['score'] += player_roll[0]
+  print("Vous avez scoré : ",player_roll[0], ", vous avez maintenant : ", player['score'])
 
-  return 0
+  nb_dice_to_reroll = sum(player_roll[1])
+  if nb_dice_to_reroll == 0:
+    isRerolling = False
+    print("Vous n'avez plus de dés pour jouer, c'est au joueur suivant")
+  
+  while isRerolling or nb_dice_to_reroll != 0:
+    new_nb_dice_to_reroll = 0
+    print('Voulez-vous relancer les ', nb_dice_to_reroll, ' dé(s) restant(s) ( y/n )')
+    reroll_response = input()
+    if reroll_response == 'y':
+
+      player_roll = analyse_score(roll_dice_set(nb_dice_to_reroll))
+      player['score'] += player_roll[0]
+      print()
+      print("Vous avez scoré : ",player_roll[0], ", vous avez maintenant : ", player['score'])
+      new_nb_dice_to_reroll = sum(player_roll[1])
+
+    if reroll_response != 'y':
+      print()
+      print("Vous avez décidé de ne pas rejouer, c'est au joueur suivant")
+      isRerolling = False
+
+    if nb_dice_to_reroll == new_nb_dice_to_reroll:
+      print("Vous n'avez pas marqué sur votre nouveau lancé, CHEH !")
+      print()
+      player['score'] = 0
+      break
+
+    nb_dice_to_reroll = new_nb_dice_to_reroll
+
+  return player['score']
+
+def sort_players(players_list):
+  players_list.sort(key=get_score, reverse=True)
+  return players_list
+
 
 def main():
   isFinished = False
   players_list = initialize_players()
-  while isFinished is not True:
-    for i in players_list:
-      play_turn(i)
-    isFinished = True
+  while isFinished == False:
+    for player in players_list:
+
+      print("C'est au tour de ", player['name'], " qui a actuellement ", player['score'], " points")
+      return_of_play_turn = play_turn(player)
+      
+      if return_of_play_turn != 0:
+        player['score'] = return_of_play_turn
+
+      isFinished = hasWon(player)
+      if isFinished:
+        break
+
+  print()
+  print("Voici le résultat de la partie")
+  players_list = sort_players(players_list)
+  for player in players_list:
+    if player['score'] >= SCORE_TO_WIN:
+      print(player['name'], " WIN ! scoring ", player['score'], " points")
+    else:
+      print(player['name'], " LOSE ! scoring ", player['score'], " points")
   return 0
 
 main()
