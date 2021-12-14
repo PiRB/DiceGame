@@ -1,3 +1,4 @@
 from classes.game import Game
 
-Game.start_game([{'name': 'Haris'}])
+game = Game()
+game.start_game()

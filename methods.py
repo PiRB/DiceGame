@@ -39,10 +39,4 @@ def analyse_score(dice_value_occurrence_list):
     bonus_score, dice_value_occurrence_list = analyse_bonus_score(dice_value_occurrence_list)
     standard_score, dice_value_occurrence_list = analyse_standard_score(dice_value_occurrence_list)
 
-    return { 'score': bonus_score + standard_score, 'occurences': dice_value_occurrence_list }
-
-def no_value_dices(occurrence_list):
-    for i in occurrence_list:
-        if occurrence_list[i] in SCORING_DICE_VALUE_LIST:
-            del occurrence_list[i]
-    return occurrence_list
+    return { 'score': bonus_score + standard_score, 'occurrences': dice_value_occurrence_list }

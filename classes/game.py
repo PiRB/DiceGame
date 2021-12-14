@@ -1,18 +1,24 @@
-from methods import roll_dice_set, analyse_score, no_value_dices
+from classes.player import Player
 
 class Game:
 
-  def start_game(players):
-    user_result = analyse_score(roll_dice_set(5))
-    user_lose = False
-    roll_again = False
-    user_no_scored_values = no_value_dices(user_result["occurences"])
-    print('Tu veux relancer ? y/n')
-    user_input = input()
-    if user_input == 'y':
-      roll_again = True
-    else:
-      roll_again = False
-    while user_lose == False or len(user_no_scored_values) > 0 and roll_again == True:
-      user_result = analyse_score(roll_dice_set(len(user_no_scored_values)))
+  def __init__(self):
+    self._isFinished = False
+
+  def initialize_players(self):
+    players_list = []
+    for i in range(2): # replace 2 by NB_OF_PLAYERS
+      print('Vous êtes le joueur numéro ', i+1,', veuillez entrer votre nom : ')
+      player_name = input()
+      player = Player(player_name)
+      players_list.append(player)
+    """ for player in players_list:
+      print('name : ', player._name, ', score : ', player._score) """
+    return players_list
+
+  def start_game(self):
+    players = self.initialize_players()
+    for player in players:
+      player._play_turn()
+      print(player._get_score())
 
