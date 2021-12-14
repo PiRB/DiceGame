@@ -60,7 +60,7 @@ def initialize_players():
     print('Entrez votre nom joueur ', i+1)
     player_name = input()
     start_score = 0
-    player = {'name': player_name, 'score': start_score, 'turn': 1}
+    player = {'name': player_name, 'score': start_score, 'turn': 1, 'nb_roll': 0}
     players_list.append(player)
 
   return players_list
@@ -85,11 +85,12 @@ def get_scoring_dice(nb_dice_to_reroll):
   return NB_DICE_TO_ROLL - nb_dice_to_reroll
 
 def play_turn(player):
+  nb_roll = 1
   isRerolling = True
   player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
   player['score'] += player_roll[0]
   player['turn'] += 1
-  print("Vous avez scoré : ",player_roll[0], ", vous avez maintenant : ", player['score'])
+  print("Roll #",nb_roll ,"Vous avez scoré : ",player_roll[0], ", vous avez maintenant : ", player['score'])
 
   nb_dice_to_reroll = sum(player_roll[1])
   if nb_dice_to_reroll == 0:
@@ -102,11 +103,13 @@ def play_turn(player):
     reroll_response = input()
     if reroll_response == 'y':
 
+      nb_roll +=1
       player_roll = analyse_score(roll_dice_set(nb_dice_to_reroll))
       player['score'] += player_roll[0]
       print()
-      print("Vous avez scoré : ",player_roll[0]," avec ", get_scoring_dice(nb_dice_to_reroll), " dé(s), vous avez maintenant : ", player['score'])
+      print("Roll #",nb_roll ,"Vous avez scoré : ",player_roll[0]," avec ", get_scoring_dice(nb_dice_to_reroll), " dé(s), vous avez maintenant : ", player['score'])
       new_nb_dice_to_reroll = sum(player_roll[1])
+      player['nb_roll'] += nb_roll
 
     if reroll_response != 'y':
       print()
@@ -168,9 +171,9 @@ def main():
   players_list = sort_players(players_list)
   for player in players_list:
     if player['score'] >= SCORE_TO_WIN:
-      print(player['name'], " WIN ! scoring ", player['score'], " points et en ", player['turn']," tours")
+      print(player['name'], " WIN ! scoring ", player['score'], " points et en ", player['turn']," tours", "roll", player['nb_roll'])
     else:
-      print(player['name'], " LOSE ! scoring ", player['score'], " points et en ", player['turn']," tours")
+      print(player['name'], " LOSE ! scoring ", player['score'], " points et en ", player['turn']," tours", "roll", player['nb_roll'])
   return 0
 
 main()
