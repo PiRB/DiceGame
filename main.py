@@ -68,8 +68,13 @@ def hasWon(player_attributes):
   return True if player_attributes[1] >= SCORE_TO_WIN else False
 
 def play_turn(player_attributes):
-  print(player_attributes)
-  roll_dice_set(NB_DICE_TO_ROLL)
+  player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
+  print(player_roll)
+  player_attributes[1] +=  player_roll[0]
+  if sum(player_roll[1]) >= 0:
+    print('Voulez-vous relancer les ', sum(player_roll[1]), ' dé(s) restant(s)')
+    replay_response = input()
+
   return 0
 
 def main():
@@ -78,6 +83,7 @@ def main():
   while isFinished is not True:
     for i in players_list:
       play_turn(i)
+    isFinished = True
   return 0
+
 main()
-# print(analyse_score([7, 2, 3, 0, 4, 1]))
