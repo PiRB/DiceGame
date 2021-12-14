@@ -22,16 +22,27 @@ class Player(object):
   def _play_turn(self):
     user_result = analyse_score(roll_dice_set(5))
     sum_occurrences = sum(user_result['occurrences'])
-    can_roll_dices = self._reroll()
     score = user_result['score']
+    print('score: %s || dé(s) à relancer: %s' % (score, sum_occurrences))
+    print('------------------------------------')
+    print()
+    if sum_occurrences == 0:
+      sum_occurrences = 5
+    can_roll_dices = self._reroll()
     while can_roll_dices and sum_occurrences > 0:
       reroll_result = analyse_score(roll_dice_set(sum_occurrences))
       sum_reroll_occurrences = sum(reroll_result['occurrences'])
       if sum_occurrences == sum_reroll_occurrences:
         score = 0
+        print("T'as perdu mon reuf, on passe au joueur suivant")
+        print('------------------------------------')
+        print()
         break
       sum_occurrences = sum_reroll_occurrences
       score += reroll_result['score']
+      print('score: %s || dé(s) à relancer: %s' % (score, sum_reroll_occurrences))
+      print()
+      print('------------------------------------')
       can_roll_dices = self._reroll()
     self._set_score(score)
 
@@ -39,6 +50,8 @@ class Player(object):
   def _reroll(self):
     print('Tu veux relancer ? y/n')
     user_input = input()
+    print('------------------------------------')
+    print()
     roll_again = False
     if user_input == 'y':
       roll_again = True
