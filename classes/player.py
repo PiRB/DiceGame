@@ -24,13 +24,11 @@ class Player(object):
     sum_occurrences = sum(user_result['occurrences'])
     can_roll_dices = self._reroll()
     score = user_result['score']
-    user_lose = False
     while can_roll_dices and sum_occurrences > 0:
       reroll_result = analyse_score(roll_dice_set(sum_occurrences))
       sum_reroll_occurrences = sum(reroll_result['occurrences'])
       if sum_occurrences == sum_reroll_occurrences:
         score = 0
-        user_lose = True
         break
       sum_occurrences = sum_reroll_occurrences
       score += reroll_result['score']
