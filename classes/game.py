@@ -12,6 +12,8 @@ class Game:
       player_name = input()
       player = Player(player_name)
       players_list.append(player)
+      print('------------------------------------')
+      print()
     """ for player in players_list:
       print('name : ', player._name, ', score : ', player._score) """
     return players_list
@@ -19,6 +21,11 @@ class Game:
   def start_game(self):
     players = self.initialize_players()
     for player in players:
+      print("%s c'est à toi: " % (player._get_name()))
+      print('------------------------------------')
+      print()
       player._play_turn()
-      print(player._get_score())
+      print('Joueur %s || score: %s' % (player._get_name(), player._get_score()))
+      print('------------------------------------')
+      print()
 
