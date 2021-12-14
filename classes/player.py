@@ -1,4 +1,5 @@
 # from ..utils.constant import NB_OF_PLAYERS
+from methods import roll_dice_set, analyse_score
 
 class Player(object):
 
@@ -17,17 +18,36 @@ class Player(object):
   
   def _set_score(self, new_score):
     self._score = new_score
+
+  def _play_turn(self):
+    user_result = analyse_score(roll_dice_set(5))
+    sum_occurrences = sum(user_result['occurrences'])
+    can_roll_dices = self._reroll()
+    score = user_result['score']
+    user_lose = False
+    while can_roll_dices and sum_occurrences > 0:
+      reroll_result = analyse_score(roll_dice_set(sum_occurrences))
+      sum_reroll_occurrences = sum(reroll_result['occurrences'])
+      if sum_occurrences == sum_reroll_occurrences:
+        score = 0
+        user_lose = True
+        break
+      sum_occurrences = sum_reroll_occurrences
+      score += reroll_result['score']
+      can_roll_dices = self._reroll()
+    self._set_score(score)
+
+    
+  def _reroll(self):
+    print('Tu veux relancer ? y/n')
+    user_input = input()
+    roll_again = False
+    if user_input == 'y':
+      roll_again = True
+    elif user_input == 'n':
+      roll_again = False
+    else:
+      self._reroll()
+    return roll_again
   
   name = property(_get_name, _set_name, _get_score, _set_score)
-
-def initialize_players():
-  players_list = []
-  for i in range(2): # replace 2 by NB_OF_PLAYERS
-    print('Vous êtes le joueur numéro ', i+1,', veuillez entrer votre nom : ')
-    player_name = input()
-    player = Player(player_name)
-    players_list.append(player)
-  for player in players_list:
-    print('name : ', player._name, ', score : ', player._score)
-
-initialize_players()
