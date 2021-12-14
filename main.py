@@ -145,22 +145,23 @@ def main():
   players_list = initialize_players()
 
   while isFinished == False:
-    for player in players_list:
+    for index, player in enumerate(players_list):
 
-      print("turn #",player['turn'], "--->", player['name'], ",score:", player['score'],"points")
+      print("turn #",player['turn'], "--->", player['name'], "rank #",index+1 ,",score:", player['score'],"points")
       return_of_play_turn = play_turn(player)
 
-      sorted_players = sort_players(players_list)
-      print("Classement: ")
-      for player in sorted_players:
-        print("- ", player['name'] ," a un score de: ", player['score'])
       
       if return_of_play_turn != 0:
         player['score'] = return_of_play_turn
-      print()
-    display_turn_finished(players_list)
-    isFinished = hasWon(players_list)
-    turn_count += 1
+
+      isFinished = hasWon(player)
+      if isFinished:
+        break
+    
+    sorted_players = sort_players(players_list)
+    print("Classement: ")
+    for index, player in enumerate(sorted_players):
+      print("-", index+1, player['name'] ," a un score de: ", player['score'])
 
   print()
   print("Voici le résultat de la partie")
