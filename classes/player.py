@@ -28,6 +28,10 @@ class Player(object):
     print()
     if sum_occurrences == 0:
       sum_occurrences = 5
+      print('LUCKY GUY YOU CAN ROOOOOOOLLL AGAIN')
+      print('score: %s || dé(s) à relancer: %s' % (score, sum_occurrences))
+      print('------------------------------------')
+      print()
     can_roll_dices = self._reroll()
     while can_roll_dices and sum_occurrences > 0:
       reroll_result = analyse_score(roll_dice_set(sum_occurrences))
@@ -44,7 +48,7 @@ class Player(object):
       print()
       print('------------------------------------')
       can_roll_dices = self._reroll()
-    self._set_score(score)
+    self._set_score(self._get_score() + score)
 
     
   def _reroll(self):

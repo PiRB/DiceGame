@@ -6,4 +6,6 @@ THRESHOLD_BONUS = 3  # Threshold of the triggering for bonus in term of occurren
 STD_BONUS_MULTIPLIER = 100  # Standard multiplier for bonus
 ACE_BONUS_MULTIPLIER = 1000  # Special multiplier for aces bonus
 
+MAX_SCORE_LIMIT = 2000 # Score to have for finish the game
+
 NB_OF_PLAYERS = 2
