@@ -60,7 +60,7 @@ def initialize_players():
     print('Entrez votre nom joueur ', i+1)
     player_name = input()
     start_score = 0
-    player = {'name': player_name, 'score': start_score, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0}
+    player = {'name': player_name, 'score': start_score, 'turn': 0, 'nb_roll': 0, 'nb_bonus': 0}
     players_list.append(player)
 
   return players_list
@@ -90,13 +90,19 @@ def get_number_of_bonus(player_roll, player):
     player['nb_bonus'] += 1
   return player['nb_bonus']
 
-def play_turn(player):
+def set_highest_number_of_turn(player, highest_nb_turn):
+  if player['turn'] >= highest_nb_turn:
+    highest_nb_turn = player['turn']
+  return highest_nb_turn
+
+def play_turn(player, highest_nb_turn):
   nb_roll = 1
   isRerolling = True
   player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
   player['score'] += player_roll[0]
   get_number_of_bonus(player_roll, player)
   player['turn'] += 1
+  highest_nb_turn = set_highest_number_of_turn(player, highest_nb_turn)
   print("Roll #",nb_roll ,"Vous avez scoré : ",player_roll[0], ", vous avez maintenant : ", player['score'])
 
   nb_dice_to_reroll = sum(player_roll[1])
@@ -131,38 +137,31 @@ def play_turn(player):
 
     nb_dice_to_reroll = new_nb_dice_to_reroll
 
-  return player['score']
+  return player['score'], highest_nb_turn
 
 def display_turn_finished(players_list):
   players_list = sort_players(players_list)
 
-  for player in players_list:
-    print(player['name'], " ==> ", player['score'])
-  print()
-
-def display_game_finished(players_list):
-  players_list = sort_players(players_list)
-
-  for i in range(len(players_list)):
-    if i == 0:
-      print(players_list[i]['name'], " WIN ! scoring ", players_list[i]['score'], ' points')
-    else:
-      print(players_list[i]['name'], " LOSE ! scoring ", players_list[i]['score'], ' points')
+def set_total_nb_of_turn(player, total_nb_turn):
+  total_nb_turn.append(player['turn'])
+  return total_nb_turn
 
 def main():
   turn_count = 1
   isFinished = False
   players_list = initialize_players()
+  highest_nb_turn = 0
+  total_nb_turn = []
 
   while isFinished == False:
     for index, player in enumerate(players_list):
 
-      print("turn #",player['turn'], "--->", player['name'], "rank #",index+1 ,",score:", player['score'],"points")
-      return_of_play_turn = play_turn(player)
+      print("turn #",player['turn']+1, "--->", player['name'], "rank #",index+1 ,",score:", player['score'],"points")
+      return_of_play_turn = play_turn(player, highest_nb_turn)
 
       
-      if return_of_play_turn != 0:
-        player['score'] = return_of_play_turn
+      if return_of_play_turn[0] != 0:
+        player['score'] = return_of_play_turn[0]
 
       isFinished = hasWon(player)
       if isFinished:
@@ -175,12 +174,15 @@ def main():
 
   print()
   print("Voici le résultat de la partie")
+  print('Partie en', return_of_play_turn[1], 'tours')
   players_list = sort_players(players_list)
   for player in players_list:
+    total_nb_turn = set_total_nb_of_turn(player, total_nb_turn)
     if player['score'] >= SCORE_TO_WIN:
       print(player['name'], " WIN ! scoring ", player['score'], " points avec", player['nb_bonus'] ,"bonus, en ", player['turn']," tours", "roll", player['nb_roll'])
     else:
       print(player['name'], " LOSE ! scoring ", player['score'], " points avec", player['nb_bonus'] ,"bonus, en ", player['turn']," tours", "roll", player['nb_roll'])
+  print(sum(total_nb_turn), "tours on été joué en tout")
   return 0
 
 main()
