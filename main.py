@@ -68,10 +68,16 @@ def initialize_players():
 def get_score(player):
   return player.get('score')
 
-def hasWon(player):
-  if player['score'] >= SCORE_TO_WIN:
-    print("La partie est finie, ", player['name'], " a atteint ou dépassé les ", SCORE_TO_WIN, " points")
-    return True
+def sort_players(players_list):
+  players_list.sort(key=get_score, reverse=True)
+  return players_list
+
+def hasWon(players_list):
+
+  players_list = sort_players(players_list)
+  
+  if players_list[0]['score'] >= SCORE_TO_WIN:
+     return True
   else:
     return False
 
@@ -113,15 +119,27 @@ def play_turn(player):
 
   return player['score']
 
-def sort_players(players_list):
-  players_list.sort(key=get_score, reverse=True)
-  return players_list
+def display_turn_finished(players_list):
+  players_list = sort_players(players_list)
 
+  for player in players_list:
+    print(player['name'], " ==> ", player['score'])
+  print()
+
+def display_game_finished(players_list):
+  players_list = sort_players(players_list)
+
+  for i in range(len(players_list)):
+    if i == 0:
+      print(players_list[i]['name'], " WIN ! scoring ", players_list[i]['score'], ' points')
+    else:
+      print(players_list[i]['name'], " LOSE ! scoring ", players_list[i]['score'], ' points')
 
 def main():
+  turn_count = 1
   isFinished = False
   players_list = initialize_players()
-  while isFinished == False:
+  while isFinished == False and turn_count <= 2:
     for player in players_list:
 
       print("C'est au tour de ", player['name'], " qui a actuellement ", player['score'], " points")
@@ -129,19 +147,14 @@ def main():
       
       if return_of_play_turn != 0:
         player['score'] = return_of_play_turn
-
-      isFinished = hasWon(player)
-      if isFinished:
-        break
+      print()
+    display_turn_finished(players_list)
+    isFinished = hasWon(players_list)
+    turn_count += 1
 
   print()
   print("Voici le résultat de la partie")
-  players_list = sort_players(players_list)
-  for player in players_list:
-    if player['score'] >= SCORE_TO_WIN:
-      print(player['name'], " WIN ! scoring ", player['score'], " points")
-    else:
-      print(player['name'], " LOSE ! scoring ", player['score'], " points")
+  display_game_finished(players_list)
   return 0
 
 main()
