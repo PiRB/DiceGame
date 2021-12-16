@@ -64,7 +64,7 @@ def initialize_players():
   players_list = []
   for i in range(NB_OF_PLAYERS):
     player_name = input(f"Entrez votre nom joueur {i+1}: ")
-    players_list.append({'name': player_name, 'score': 0, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0})
+    players_list.append({'name': player_name, 'score': 0, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0, 'potential_points_lost': 0})
 
   return players_list
 
@@ -140,10 +140,11 @@ def play_turn(player, highest_nb_turn):
     if nb_dice_to_reroll == new_nb_dice_to_reroll:
       print("Vous n'avez pas marqué sur votre nouveau lancé, CHEH !")
       print()
-      MEAN_NO_SCORING_TURN.append(player_roll[0])
-      if player_roll[0] > MAX_TURN_LOSS['score']: 
+      MEAN_NO_SCORING_TURN.append(player['score'])
+      if player['score'] > MAX_TURN_LOSS['score']:
         MAX_TURN_LOSS['player'] = player['name']
-        MAX_TURN_LOSS['score'] = player_roll[0]
+        MAX_TURN_LOSS['score'] = player['score']
+        player['potential_points_lost'] = player['score']
       player['score'] = 0
       break
 
@@ -184,9 +185,9 @@ def main():
   players_list = sort_players(players_list)
   for player in players_list:
     if player['score'] >= SCORE_TO_WIN:
-      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus, en {player['turn']} tours roll {player['nb_roll']}")
+      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll")
     else:
-      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus, en {player['turn']} tours roll {player['nb_roll']}")
+      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll")
   
   print("\n---- STATS ----")
   print(f"Max turn scoring : {MAX_TURN_SCORING['player']} with {MAX_TURN_SCORING['score']}")
