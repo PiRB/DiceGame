@@ -1,4 +1,5 @@
 import random
+from statistics import mean
 
 NB_DICE_SIDE = 6  # Nb of side of the Dices
 SCORING_DICE_VALUE_LIST = [1, 5]  # List of the side values of the dice who trigger a standard score
@@ -97,8 +98,8 @@ def hasWon(player):
   else:
     return False
 
-def get_scoring_dice(nb_dice_to_reroll):
-  return NB_DICE_TO_ROLL - nb_dice_to_reroll
+def get_scoring_dice(nb_dice_previous_roll, nb_dice_to_reroll):
+  return nb_dice_previous_roll - nb_dice_to_reroll
 
 def get_number_of_bonus(player_roll, player):
   bonus_score = player_roll[2]
@@ -114,19 +115,20 @@ def set_highest_number_of_turn(player, highest_nb_turn):
 def play_turn(player, highest_nb_turn):
   nb_roll, isRerolling = 1, True
   player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
-  occurrence_list = player_roll[4]
   player['score'] += player_roll[0]
   get_number_of_bonus(player_roll, player)
   player['turn'] += 1
   highest_nb_turn = set_highest_number_of_turn(player, highest_nb_turn)
-  print(f"roll #{nb_roll} : scoring {player_roll[0]} vous avez maintenant {player['score']}")
+  print(f"roll #{nb_roll} : scoring {player_roll[0]} vous avez maintenant {player['score']} et {player_roll[4]}")
 
   nb_dice_to_reroll = sum(player_roll[1])
+
   MEAN_SCORING_TURN.append(player_roll[0])
 
   if player_roll[0] > MAX_TURN_SCORING['score']: 
     MAX_TURN_SCORING['player'] = player['name']
     MAX_TURN_SCORING['score'] = player_roll[0]
+
   if nb_dice_to_reroll == 0:
     player['full_roll'] += 1
     isRerolling = False
@@ -136,6 +138,7 @@ def play_turn(player, highest_nb_turn):
     new_nb_dice_to_reroll = 0
     print(f"Voulez-vous relancer les {nb_dice_to_reroll} dé(s) restant(s) ( y/n )")
     reroll_response = input()
+
     if reroll_response == 'y':
       nb_roll +=1
       if nb_roll > LONGUEST_TURN['roll']:
@@ -145,8 +148,9 @@ def play_turn(player, highest_nb_turn):
       player_roll = analyse_score(roll_dice_set(nb_dice_to_reroll))
       player['score'] += player_roll[0]
       print()
-      print(f"roll #{nb_roll} : scoring {player_roll[0]} avec {get_scoring_dice(nb_dice_to_reroll)} dé(s), vous avez maintenant : {player['score']} {occurrence_list}")
       new_nb_dice_to_reroll = sum(player_roll[1])
+      nb_scoring_dice = get_scoring_dice(nb_dice_to_reroll, new_nb_dice_to_reroll)
+      print(f"roll #{nb_roll} : scoring {player_roll[0]} avec {nb_scoring_dice} dé(s), vous avez maintenant : {player['score']} {player_roll[4]}")
       player['nb_roll'] += nb_roll
 
     if reroll_response != 'y':
@@ -211,8 +215,8 @@ def main():
   print(f"Longest turn : {LONGUEST_TURN['player']} with {LONGUEST_TURN['roll']}")
   print(f"Max turn loss : {MAX_TURN_LOSS['player']} with {MAX_TURN_LOSS['score']}")
 
-  print(f"\nMean scoring turn : {sum(MEAN_SCORING_TURN) / len(MEAN_SCORING_TURN)}")
-  print(f"Mean non scoring turn : {sum(MEAN_NO_SCORING_TURN) / len(MEAN_NO_SCORING_TURN)}")
+  print(f"\nMean scoring turn : {mean(MEAN_SCORING_TURN)}")
+  print(f"Mean non scoring turn : {mean(MEAN_NO_SCORING_TURN)}")
   return 0
 
 main()
