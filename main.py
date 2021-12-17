@@ -32,6 +32,8 @@ def roll_dice_set(nb_dice_to_roll):
 
 def analyse_bonus_score(dice_value_occurrence_list):
     score = 0
+    scoring_dices = []
+
     for side_value_index, dice_value_occurrence in enumerate(dice_value_occurrence_list):
         nb_of_bonus = dice_value_occurrence // THRESHOLD_BONUS
         if nb_of_bonus > 0:
@@ -42,29 +44,42 @@ def analyse_bonus_score(dice_value_occurrence_list):
             score += nb_of_bonus * bonus_multiplier * (side_value_index + 1)
             dice_value_occurrence_list[side_value_index] %= THRESHOLD_BONUS
 
-    return score, dice_value_occurrence_list
+            dices_left = dice_value_occurrence % THRESHOLD_BONUS
+            dice_value_occurrence_list[side_value_index] = dices_left
+
+            nb_scoring_dices = dice_value_occurrence - dices_left
+            scoring_dices.append([side_value_index + 1, nb_scoring_dices])
+
+    return score, dice_value_occurrence_list, scoring_dices
 
 
 def analyse_standard_score(dice_value_occurrence_list):
     score = 0
+    scoring_dices = []
+
     for scoring_value, scoring_multiplier in zip(SCORING_DICE_VALUE_LIST, SCORING_MULTIPLIER_LIST):
         score += dice_value_occurrence_list[scoring_value - 1] * scoring_multiplier
-        dice_value_occurrence_list[scoring_value - 1] = 0
 
-    return score, dice_value_occurrence_list
+        if dice_value_occurrence_list[scoring_value - 1] != 0:
+            scoring_dices.append([scoring_value, dice_value_occurrence_list[scoring_value - 1]])
+            dice_value_occurrence_list[scoring_value - 1] = 0
+
+    return score, dice_value_occurrence_list, scoring_dices
 
 
 def analyse_score(dice_value_occurrence_list):
-  bonus_score, dice_value_occurrence_list = analyse_bonus_score(dice_value_occurrence_list)
-  standard_score, dice_value_occurrence_list = analyse_standard_score(dice_value_occurrence_list)
+  bonus_score, dice_value_occurrence_list, bonus_scoring_dices = analyse_bonus_score(dice_value_occurrence_list)
+  standard_score, dice_value_occurrence_list, standard_scoring_dices = analyse_standard_score(dice_value_occurrence_list)
 
-  return bonus_score + standard_score, dice_value_occurrence_list, bonus_score, standard_score
+  scoring_dices = bonus_scoring_dices + standard_scoring_dices
+
+  return bonus_score + standard_score, dice_value_occurrence_list , bonus_score, standard_score, scoring_dices
 
 def initialize_players():
   players_list = []
   for i in range(NB_OF_PLAYERS):
     player_name = input(f"Entrez votre nom joueur {i+1}: ")
-    players_list.append({'name': player_name, 'score': 0, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0, 'potential_points_lost': 0, 'full_roll': 0})
+    players_list.append({'name': player_name, 'score': 0, 'turn': 0, 'nb_roll': 0, 'nb_bonus': 0, 'potential_points_lost': 0, 'full_roll': 0})
 
   return players_list
 
@@ -99,6 +114,7 @@ def set_highest_number_of_turn(player, highest_nb_turn):
 def play_turn(player, highest_nb_turn):
   nb_roll, isRerolling = 1, True
   player_roll = analyse_score(roll_dice_set(NB_DICE_TO_ROLL))
+  occurrence_list = player_roll[4]
   player['score'] += player_roll[0]
   get_number_of_bonus(player_roll, player)
   player['turn'] += 1
@@ -129,7 +145,7 @@ def play_turn(player, highest_nb_turn):
       player_roll = analyse_score(roll_dice_set(nb_dice_to_reroll))
       player['score'] += player_roll[0]
       print()
-      print(f"roll #{nb_roll} : scoring {player_roll[0]} avec {get_scoring_dice(nb_dice_to_reroll)} dé(s), vous avez maintenant : {player['score']}")
+      print(f"roll #{nb_roll} : scoring {player_roll[0]} avec {get_scoring_dice(nb_dice_to_reroll)} dé(s), vous avez maintenant : {player['score']} {occurrence_list}")
       new_nb_dice_to_reroll = sum(player_roll[1])
       player['nb_roll'] += nb_roll
 
