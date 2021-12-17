@@ -92,7 +92,7 @@ def play_turn(player):
     isRerolling = False
     print("Vous n'avez plus de dés pour jouer, c'est au joueur suivant")
   
-  while isRerolling or nb_dice_to_reroll != 0:
+  while isRerolling and nb_dice_to_reroll != 0:
     new_nb_dice_to_reroll = 0
     print('Voulez-vous relancer les ', nb_dice_to_reroll, ' dé(s) restant(s) ( y/n )')
     reroll_response = input()
