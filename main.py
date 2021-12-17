@@ -64,7 +64,7 @@ def initialize_players():
   players_list = []
   for i in range(NB_OF_PLAYERS):
     player_name = input(f"Entrez votre nom joueur {i+1}: ")
-    players_list.append({'name': player_name, 'score': 0, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0, 'potential_points_lost': 0})
+    players_list.append({'name': player_name, 'score': 0, 'turn': 1, 'nb_roll': 0, 'nb_bonus': 0, 'potential_points_lost': 0, 'full_roll': 0})
 
   return players_list
 
@@ -112,6 +112,7 @@ def play_turn(player, highest_nb_turn):
     MAX_TURN_SCORING['player'] = player['name']
     MAX_TURN_SCORING['score'] = player_roll[0]
   if nb_dice_to_reroll == 0:
+    player['full_roll'] += 1
     isRerolling = False
     print("Vous n'avez plus de dés pour jouer, c'est au joueur suivant")
   
@@ -185,9 +186,9 @@ def main():
   players_list = sort_players(players_list)
   for player in players_list:
     if player['score'] >= SCORE_TO_WIN:
-      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll")
+      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll et {player['full_roll']} full roll")
     else:
-      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll")
+      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} rollet {player['full_roll']} full roll")
   
   print("\n---- STATS ----")
   print(f"Max turn scoring : {MAX_TURN_SCORING['player']} with {MAX_TURN_SCORING['score']}")
