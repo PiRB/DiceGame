@@ -45,9 +45,9 @@ def analyse_bonus_score(dice_value_occurrence_list):
             score += nb_of_bonus * bonus_multiplier * (side_value_index + 1)
             dice_value_occurrence_list[side_value_index] %= THRESHOLD_BONUS
 
+            #get bonus scoring dices
             dices_left = dice_value_occurrence % THRESHOLD_BONUS
             dice_value_occurrence_list[side_value_index] = dices_left
-
             nb_scoring_dices = dice_value_occurrence - dices_left
             scoring_dices.append([side_value_index + 1, nb_scoring_dices])
 
@@ -119,26 +119,30 @@ def play_turn(player, highest_nb_turn):
   get_number_of_bonus(player_roll, player)
   player['turn'] += 1
   highest_nb_turn = set_highest_number_of_turn(player, highest_nb_turn)
-  print(f"roll #{nb_roll} : scoring {player_roll[0]} vous avez maintenant {player['score']} et {player_roll[4]}")
+  print(f"roll #{nb_roll} : scoring dices {player_roll[4]}, scoring {player_roll[0]} vous avez maintenant {player['score']}")
 
   nb_dice_to_reroll = sum(player_roll[1])
 
   MEAN_SCORING_TURN.append(player_roll[0])
 
-  if player_roll[0] > MAX_TURN_SCORING['score']: 
+  # check that score of player is higher than max score
+  if player['score'] > MAX_TURN_SCORING['score']: 
     MAX_TURN_SCORING['player'] = player['name']
-    MAX_TURN_SCORING['score'] = player_roll[0]
+    MAX_TURN_SCORING['score'] = player['score']
 
+  # check if all dices are roll
   if nb_dice_to_reroll == 0:
     player['full_roll'] += 1
     isRerolling = False
     print("Vous n'avez plus de dés pour jouer, c'est au joueur suivant")
   
+  # reroll untill there is dice that didn't score
   while isRerolling and nb_dice_to_reroll != 0:
     new_nb_dice_to_reroll = 0
     print(f"Voulez-vous relancer les {nb_dice_to_reroll} dé(s) restant(s) ( y/n )")
     reroll_response = input()
 
+    #roll when user press Yes
     if reroll_response == 'y':
       nb_roll +=1
       if nb_roll > LONGUEST_TURN['roll']:
@@ -150,15 +154,17 @@ def play_turn(player, highest_nb_turn):
       print()
       new_nb_dice_to_reroll = sum(player_roll[1])
       nb_scoring_dice = get_scoring_dice(nb_dice_to_reroll, new_nb_dice_to_reroll)
-      print(f"roll #{nb_roll} : scoring {player_roll[0]} avec {nb_scoring_dice} dé(s), vous avez maintenant : {player['score']} {player_roll[4]}")
+      print(f"roll #{nb_roll} : scoring dices {player_roll[4]}, scoring {player_roll[0]} avec {nb_scoring_dice} dé(s), vous avez maintenant : {player['score']}")
       player['nb_roll'] += nb_roll
 
+    # End turn when user press anything other than yes
     if reroll_response != 'y':
       print()
       print("Vous avez décidé de ne pas rejouer, c'est au joueur suivant")
       isRerolling = False
 
-    if nb_dice_to_reroll == new_nb_dice_to_reroll:
+    # player lose the turn
+    if nb_dice_to_reroll == new_nb_dice_to_reroll and isRerolling:
       print("Vous n'avez pas marqué sur votre nouveau lancé, CHEH !")
       print()
       MEAN_NO_SCORING_TURN.append(player['score'])
@@ -177,7 +183,6 @@ def display_turn_finished(players_list):
   players_list = sort_players(players_list)
 
 def main():
-  turn_count = 1
   isFinished = False
   players_list = initialize_players()
   highest_nb_turn = 0
@@ -206,9 +211,9 @@ def main():
   players_list = sort_players(players_list)
   for player in players_list:
     if player['score'] >= SCORE_TO_WIN:
-      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll et {player['full_roll']} full roll")
+      print(f"{player['name']} WIN ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll avec {player['full_roll']} full roll")
     else:
-      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} rollet {player['full_roll']} full roll")
+      print(f"{player['name']} LOSE ! scoring {player['score']} points avec {player['nb_bonus']} bonus et {player['potential_points_lost']} potential points lost, en {player['turn']} tours et {player['nb_roll']} roll avec {player['full_roll']} full roll")
   
   print("\n---- STATS ----")
   print(f"Max turn scoring : {MAX_TURN_SCORING['player']} with {MAX_TURN_SCORING['score']}")
