@@ -8,4 +8,4 @@ ACE_BONUS_MULTIPLIER = 1000  # Special multiplier for aces bonus
 
 MAX_SCORE_LIMIT = 2000 # Score to have for finish the game
 
-NB_OF_PLAYERS = 2
+NB_OF_PLAYERS = 4
